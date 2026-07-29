@@ -3,6 +3,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { TelegramModule } from './telegram/telegram.module';
+import { UserModule } from './user/user.module';
 
 @Module({
     imports: [
@@ -15,7 +17,9 @@ import { MongooseModule } from '@nestjs/mongoose';
     useFactory: (config: ConfigService) => ({
       uri: config.get<string>('DB_URI'),
     }),
-  })
+  }),
+    TelegramModule,
+    UserModule
   ],
   controllers: [AppController],
   providers: [AppService],
