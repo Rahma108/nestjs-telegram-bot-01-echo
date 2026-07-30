@@ -3,6 +3,7 @@ import { TelegramService } from './telegram.service';
 import { TelegramController } from './telegram.controller';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { ConfigService } from '@nestjs/config';
+import { RegistrationModule } from './registration/registration.module';
 
 @Module({
   imports: [
@@ -12,8 +13,10 @@ import { ConfigService } from '@nestjs/config';
         token: configService.get<string>('BOT_TOKEN')!,
       }),
     }),
+    RegistrationModule,
   ],
+
   controllers: [TelegramController],
-  providers: [TelegramService],
+  providers: [TelegramService ],
 })
 export class TelegramModule {}

@@ -5,6 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TelegramModule } from './telegram/telegram.module';
 import { UserModule } from './user/user.module';
+import { StateModule } from './telegram/state/state.module';
+import { RegistrationModule } from './telegram/registration/registration.module';
 
 @Module({
     imports: [
@@ -19,7 +21,10 @@ import { UserModule } from './user/user.module';
     }),
   }),
     TelegramModule,
-    UserModule
+    UserModule,
+    StateModule,
+    RegistrationModule
+
   ],
   controllers: [AppController],
   providers: [AppService],
