@@ -2,7 +2,7 @@ export interface IUser {
     telegramId: number;
     firstName: string;
 
-    username: string;
+    username?: string;
     languageCode: string;
 
     deletedAt?:Date ;

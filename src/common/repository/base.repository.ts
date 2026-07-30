@@ -273,7 +273,7 @@ async findOneAndUpdate({ filter = {}, update, options } : {
     return await this.model.findOneAndUpdate(
         filter,
         { ...update, $inc: { __v: 1 } },
-        { ...options, new: true }                 
+        { ...options, returnDocument: 'after' }                 
     )
 }
 

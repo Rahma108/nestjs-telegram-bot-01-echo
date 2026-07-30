@@ -17,22 +17,45 @@ export type HUserDocument = HydratedDocument<IUser>;
   strictQuery: true,
 })
 export class User implements IUser {
-    @Prop({ type: Number , required: true, unique: true })
-    telegramId!: number;
+    @Prop({
+    type: Number,
+    required: true,
+    unique: true,
+    index: true,
+  })
+  telegramId!: number;
 
-    @Prop({type : String , required: true })
-    firstName!: string;
+  @Prop({
+    type: String,
+    required: true,
+    trim: true,
+  })
+  firstName!: string;
 
-    @Prop({type : String , required: true })
-    username!: string;
+  @Prop({
+    type: String,
+    default: null,
+    trim: true,
+  })
+  username?: string;
 
-    @Prop({type : String , required: true })
-    languageCode!: string;
+  @Prop({
+    type: String,
+    default: 'en',
+  })
+  languageCode!: string;
 
-    @Prop({type : Date})
-    deletedAt?:Date ;
-    @Prop({type : Date})
-    restoredAt?:Date;
+  @Prop({
+    type: Date,
+    default: null,
+  })
+  deletedAt?: Date;
+
+  @Prop({
+    type: Date,
+    default: null,
+  })
+  restoredAt?: Date;
 }
 
 export const userMongooseSchema = SchemaFactory.createForClass(User);
@@ -41,59 +64,58 @@ export const UserModel = MongooseModule.forFeatureAsync([
     name: User.name,
 
     useFactory: () => {
-      userMongooseSchema.pre(["find", "findOne"], function () {
+     userMongooseSchema.pre(['find', 'findOne'], function () {
+    if (this.getQuery().paranoid === false) {
+      return;
+    }
 
-        if (this.getQuery().paranoid == false) {
-          this.setQuery({
-            ...this.getQuery(),
-          });
-        } else {
-          this.setQuery({
-            ...this.getQuery(),
-            deletedAt: { $exists: false }
-          });
-        }
+    this.setQuery({
+      ...this.getQuery(),
+      deletedAt: null,
+    });
+  });
 
+  userMongooseSchema.pre(
+    ['updateOne', 'findOneAndUpdate'],
+    function () {
+      const update = this.getUpdate() as HydratedDocument<IUser>;
+
+      if (update.deletedAt) {
+        this.setQuery({
+          ...this.getQuery(),
+          deletedAt: null,
+        });
+
+        this.setUpdate({
+          ...this.getUpdate(),
+          $unset: { restoredAt: 1 },
+        });
+      }
+
+      if (update.restoredAt) {
+        this.setQuery({
+          ...this.getQuery(),
+          paranoid: false,
+          deletedAt: { $ne: null },
+        });
+      }
+    },
+  );
+
+  userMongooseSchema.pre(
+    ['deleteOne', 'findOneAndDelete'],
+    function () {
+      if (this.getQuery().force === true) {
+        return;
+      }
+
+      this.setQuery({
+        ...this.getQuery(),
+        deletedAt: { $ne: null },
       });
-      userMongooseSchema.pre(["updateOne", "findOneAndUpdate"], function () {
+    },
+  );
 
-        const update = this.getUpdate() as HydratedDocument<IUser>;
-
-        if (update.deletedAt) {
-          this.getQuery().paranoid = true;
-
-          this.setUpdate({
-            ...this.getUpdate(),
-            $unset: { restoredAt: 1 }
-          });
-        }
-
-        if (update.restoredAt) {
-          this.setQuery({
-            ...this.getQuery(),
-            paranoid: false,
-            deletedAt: { $exists: true }
-          });
-        }
-
-    });
-
-      userMongooseSchema.pre(["deleteOne", "findOneAndDelete"], function () {
-
-        if (this.getQuery().force == true ) {
-  
-
-          this.setQuery({
-            ...this.getQuery(),
-          });
-        }else{
-          this.setQuery({
-            ...this.getQuery(),
-            deletedAt: { $exists: true }
-          });
-        }
-
-    });
 
     return userMongooseSchema;
     },

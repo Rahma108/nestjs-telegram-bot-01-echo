@@ -8,7 +8,10 @@ import { UserRepository } from 'src/common/repository';
   imports: [
     UserModel
   ],
-  exports: [],
+  exports: [
+    UserService,   
+    UserRepository,
+  ],
   controllers: [UserController],
   providers: [UserService , UserRepository],
 })

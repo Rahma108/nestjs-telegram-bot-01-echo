@@ -7,30 +7,35 @@ export class UserService {
   constructor( private readonly userRepository: UserRepository,){
 }
 // findByTelegramId
-    async findByTelegramId(telegramId: number) {
-      return this.userRepository.findOne({
-        filter:{
-          telegramId
-        }
-      });
+ async findByTelegramId(telegramId: number) {
 
-    }
+  const user = await this.userRepository.findOne({
+    filter: {
+      telegramId,
+    },
+  });
 
-    // create 
-    async create(data: Partial<IUser>) {
-      return this.userRepository.createOne({
-        data
-      })
-    }
-      async update(
-      telegramId: number,
-      data: Partial<IUser>,
-    ) {
-      return this.userRepository.findOneAndUpdate({
+
+  return user;
+}
+
+  async createOrUpdate(data: Partial<IUser>) {
+      const user = await this.userRepository.findOneAndUpdate({
       filter: {
-        telegramId,
+        telegramId: data.telegramId,
       },
-      update: data,
+      update: {
+        telegramId: data.telegramId,
+        firstName: data.firstName,
+        username: data.username,
+        languageCode: data.languageCode,
+      },
+      options: {
+        upsert: true,
+      },
     });
-    }
+
+    return user;
+    
+  }
 }

@@ -4,7 +4,8 @@ import { TelegramController } from './telegram.controller';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { ConfigService } from '@nestjs/config';
 import { RegistrationModule } from './registration/registration.module';
-
+import { TasksModule } from 'src/task/tasks/tasks.module';
+import { UserModule } from 'src/user/user.module';
 @Module({
   imports: [
     TelegrafModule.forRootAsync({
@@ -14,6 +15,8 @@ import { RegistrationModule } from './registration/registration.module';
       }),
     }),
     RegistrationModule,
+      TasksModule,
+    UserModule
   ],
 
   controllers: [TelegramController],

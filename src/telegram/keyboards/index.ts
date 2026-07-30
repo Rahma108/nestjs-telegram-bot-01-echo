@@ -1,3 +1,5 @@
 export * from './profile.keyboard'
 export * from './home.keyboard'
 export * from './help.keyboard'
+export * from './task.keyboard'
+export * from './trash.keyboard'
